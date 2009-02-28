@@ -19,9 +19,11 @@ module EventMachine
         starting = Time.now
       end
     end
-    
+
     time = starting - Time.now
-    time += increment if time < 0
+    while time < 0
+      time += increment
+    end
 
     EM.add_timer(time) { reschedule.call(increment, blk) }
     
