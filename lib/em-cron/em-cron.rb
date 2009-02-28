@@ -22,11 +22,12 @@ module EventMachine
 
     if starting.is_a?(Time)
       time = starting - Time.now
-      while time < 0
-        time += increment
-      end
     else
       time = starting
+    end
+
+    while time < 0
+      time += increment
     end
 
     EM.add_timer(time) { reschedule.call(increment, blk) }
