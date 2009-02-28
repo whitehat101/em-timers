@@ -1,6 +1,6 @@
-em-cron
+em-timers
 
-cron-style methods for timers in EventMachine
+helper methods for timers in EventMachine
 
 examples:
 
@@ -19,7 +19,7 @@ EM.do_monthly(:starting => 1.day.from_now) { puts "pay the bills" }
 # Or you can simply pass a number of seconds til starting
 EM.do_monthly(:starting => 2592000) { puts "pay the bills, in seconds!" }
 
-# Leveraging the Chronic time parsing library. em-cron knows if you have required 
+# Leveraging the Chronic time parsing library. em-timers knows if you have required 
 # Chronic and uses it to parse strings if you have. Otherwise, it uses Time.parse.
 #
 # Every 2 hours, starting next Tuesday at 9AM.
@@ -32,7 +32,7 @@ EM.do(:every => 1.minutes + 3.seconds) { puts "hi!" }
 
 TODO:
 
-Maintain a list of task signatures and their associated timer signatures so cron tasks can be canceled.
+Maintain a list of task signatures and their associated timer signatures so tasks can be canceled.
 
 
 jakecdouglas@gmail.com
