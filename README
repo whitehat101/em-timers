@@ -16,6 +16,9 @@ EM.do_weekly(:starting => 10.hours.from_now) { puts "take out the garbage" }
 # Once per month, starting at this time tomorrow.
 EM.do_monthly(:starting => 1.day.from_now) { puts "pay the bills" }
 
+# Or you can simply pass a number of seconds til starting
+EM.do_monthly(:starting => 2592000) { puts "pay the bills, in seconds!" }
+
 # Leveraging the Chronic time parsing library. em-cron knows if you have required 
 # Chronic and uses it to parse strings if you have. Otherwise, it uses Time.parse.
 #
