@@ -57,7 +57,7 @@ module EventMachine
         
         @kickoff_timer = EM.add_timer(time) {
           @kickoff_timer = nil
-          reschedule.call(increment)
+          reschedule(increment)
         }
         self
       end
