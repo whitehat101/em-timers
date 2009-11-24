@@ -7,12 +7,21 @@ module EventMachine
       class << self
         attr :list, false
       end
+      attr :tag, false
+      attr :name, false
       attr :options, true
       attr :reschedule_timer, false
       attr :kickoff_timer, false
       def initialize(options, block)
         @options = options
+        if options[:tag]
+          @tag = options[:tag]
+        end
+        if options[:name]
+          @tag = options[:name]
+        end
         @block = block
+        @repeats = true
         Timer.list << self
       end
       def cancel
@@ -27,47 +36,85 @@ module EventMachine
         Timer.list.delete(self)
       end
       def schedule
-        increment = @options[:every]
+        increment = @options[:every] || 1
         starting = @options[:starting]
-        
-        if starting == :now
-          reschedule(increment)
+
+        if options[:cron]
+          starting =
+            EventMachine::Timers::CronLine.new(options[:cron]).next_time
+          @kickoff_timer = EM.add_timer(calculate_delta_time(starting)) {
+            @kickoff_timer = nil
+            run_and_reschedule_cron
+          }
           return self
-        else
-          if starting.is_a?(String)
-            starting = Object.const_defined?("Chronic") ? 
-                       Chronic.parse(starting) : 
-                       Time.parse(starting)
-          elsif starting.is_a?(Time) || starting.kind_of?(Numeric)
-            starting = starting
+        elsif @options[:at] || @options[:in]
+          @repeats = false
+          if @options[:at]
+            starting = parse_time(@options[:at])
           else
-            starting = Time.now
+            starting = Time.now + parse_time(@options[:in])
           end
         end
         
-        if starting.is_a?(Time)
-          time = starting - Time.now
+        if starting == :now
+          run_and_reschedule(increment)
+          return self
         else
-          time = starting
+          starting = parse_time(starting)
         end
-        
-        while time < 0
-          time += increment
-        end
+
+        time = calculate_delta_time(starting)
         
         @kickoff_timer = EM.add_timer(time) {
           @kickoff_timer = nil
-          reschedule(increment)
+          run_and_reschedule(increment)
         }
         self
       end
 
       protected
-      
-      def reschedule(inc)
-        @reschedule_timer = EM.add_timer(inc) {
-          reschedule(inc)
+
+      def calculate_delta_time(the_time)
+        increment = @options[:every] || 1
+        if the_time.is_a?(Time)
+          time = the_time - Time.now
+        else
+          time = the_time
+        end
+        while time < 0
+          time += increment
+        end
+        puts "delta is #{time}"
+        time
+      end
+
+      def parse_time(some_time)
+        if some_time.is_a?(String)
+          Object.const_defined?("Chronic") ? 
+            Chronic.parse(some_time) : 
+            Time.parse(some_time)
+        elsif some_time.is_a?(Time) || some_time.kind_of?(Numeric)
+          some_time
+        else
+          Time.now
+        end
+      end
+
+      def run_and_reschedule_cron
+        starting =
+          EventMachine::Timers::CronLine.new(options[:cron]).next_time
+        @reschedule_timer = EM.add_timer(calculate_delta_time(starting)) {
+          run_and_reschedule_cron
         }
+        @block.call
+      end
+      
+      def run_and_reschedule(inc)
+        if @repeats
+          @reschedule_timer = EM.add_timer(inc) {
+            reschedule(inc)
+          }
+        end
         @block.call
       end
       
@@ -93,8 +140,24 @@ module EventMachine
       self.do({:every => 1.month}.merge(options), &blk)
     end
 
+    def self.cron(spec, &blk)
+      self.do({:cron => spec}, &blk)
+    end
+
     def self.list
       Timer.list
+    end
+
+    def self.find_by_tag(tag)
+      Timer.list.find_all { |t|
+        t.tag == tag
+      }
+    end
+
+    def self.find_by_name(name)
+      Timer.list.find_all { |t|
+        t.name == name
+      }
     end
 
   end
