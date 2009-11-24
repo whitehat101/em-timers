@@ -18,7 +18,7 @@ module EventMachine
           @tag = options[:tag]
         end
         if options[:name]
-          @tag = options[:name]
+          @name = options[:name]
         end
         @block = block
         @repeats = true
