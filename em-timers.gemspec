@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
   s.name = "em-timers"
-  s.version = "0.0.1"
-  s.date = "2009-02-27"
-  s.authors = ["Jake Douglas"]
+  s.version = "0.2.0"
+  s.date = "2009-11-23"
+  s.authors = ["Jake Douglas", 'Colin Steele']
   s.email = "jakecdouglas@gmail.com"
   s.has_rdoc = false
   s.summary = "helper methods for timers in EventMachine"

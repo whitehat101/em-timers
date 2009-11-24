@@ -5,34 +5,34 @@ helper methods for timers in EventMachine
 examples:
 
 # Once per hour, starting now. Note the :now symbol must be passed for your block to be called immediately.
-EM.do_hourly(:starting => :now) { puts "drink a beer" }
+EM::Timers.do_hourly(:starting => :now) { puts "drink a beer" }
 
 # Once per day, starting in 1 day.
-EM.do_daily { puts "take a shower" }
+EM::Timers.do_daily { puts "take a shower" }
 
 # Once per week, starting in 10 hours
-EM.do_weekly(:starting => 10.hours.from_now) { puts "take out the garbage" }
+EM::Timers.do_weekly(:starting => 10.hours.from_now) { puts "take out the garbage" }
 
 # Once per month, starting at this time tomorrow.
-EM.do_monthly(:starting => 1.day.from_now) { puts "pay the bills" }
+EM::Timers.do_monthly(:starting => 1.day.from_now) { puts "pay the bills" }
 
 # Or you can simply pass a number of seconds til starting
-EM.do_monthly(:starting => 2592000) { puts "pay the bills, in seconds!" }
+EM::Timers.do_monthly(:starting => 2592000) { puts "pay the bills, in seconds!" }
 
 # Leveraging the Chronic time parsing library. em-timers knows if you have required 
 # Chronic and uses it to parse strings if you have. Otherwise, it uses Time.parse.
 #
 # Every 2 hours, starting next Tuesday at 9AM.
 require 'chronic'
-EM.do(:every => 2.hours, :starting => 'next tuesday at 9am') { puts "go pee" }
+EM::Timers.do(:every => 2.hours, :starting => 'next tuesday at 9am') { puts "go pee" }
 
 # You can add up units of time as well
-EM.do(:every => 1.minutes + 3.seconds) { puts "hi!" }
+EM::Timers.do(:every => 1.minutes + 3.seconds) { puts "hi!" }
 
-
-TODO:
-
-Maintain a list of task signatures and their associated timer signatures so tasks can be canceled.
+# You can list and cancel timers, too
+EM::Timers.list.each { |timer|
+  timer.cancel
+}
 
 
 jakecdouglas@gmail.com
