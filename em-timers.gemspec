@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.files = ["README",
              "lib/em-timers.rb",
              "lib/em-timers/numericmixable.rb",
+             "lib/em-timers/cron_line.rb",
              "lib/em-timers/em-timers.rb"]
   s.add_dependency('eventmachine')
 end

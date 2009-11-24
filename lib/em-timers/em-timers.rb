@@ -84,7 +84,6 @@ module EventMachine
         while time < 0
           time += increment
         end
-        puts "delta is #{time}"
         time
       end
 
@@ -112,7 +111,7 @@ module EventMachine
       def run_and_reschedule(inc)
         if @repeats
           @reschedule_timer = EM.add_timer(inc) {
-            reschedule(inc)
+            run_and_reschedule(inc)
           }
         end
         @block.call
